@@ -35,3 +35,29 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Kubernetes configs and secrets (if used)
+.kube/
+*.yaml~  # backup files
+*.bak
+
+# IDE/editor config
+.vscode/
+.idea/
+*.swp
+*.swo
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Sensitive files (examples only — do not store credentials)
+secrets.env
+.env
+.env.*
+
+# Node.js (if any frontend/react code is embedded later)
+node_modules/
+dist/
+build/
