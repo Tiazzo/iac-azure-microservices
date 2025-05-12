@@ -33,10 +33,10 @@ terraform apply
 Ensure your Azure credentials are loaded via Azure CLI or environment variables.
 
 ### 2. Deploy Kubernetes Resources
+```bash
 kubectl apply -f k8s/namespace.yaml
-
 kubectl apply -R -f k8s/
-
+```
 --- 
 
 ## Technologies
