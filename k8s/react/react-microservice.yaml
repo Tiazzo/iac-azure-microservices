@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  microservice-react
+  namespace: example-app
+  labels:
+    app: microservice-react
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  microservice-react
+  template:
+    metadata:
+      labels:
+        app:  microservice-react
+    spec:
+      containers:
+      - name:  microservice-react
+        image: example.registry.io/app/react:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+          - name: REACT_APP_GATEWAY
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: react-app-gateway
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-react
+  namespace: example-app
+  labels:
+    name: service-react
+  annotations:
+    service.beta.kubernetes.io/azure-dns-label-name: lbfrontend
+spec:
+  selector:
+    app:  microservice-react
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000

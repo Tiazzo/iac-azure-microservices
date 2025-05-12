@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-desk
+  namespace: example-app
+  labels:
+    app: mysql-desk
+spec:
+  selector:
+    matchLabels:
+      app: mysql-desk
+  template:
+    metadata:
+      labels:
+        app: mysql-desk
+    spec:
+      containers:
+      - image: mysql:5.7.34
+        name: mysql-desk
+        ports:
+        - containerPort: 3306
+          name: mysql-desk
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: changeme
+        - name: MYSQL_DATABASE
+          value: desksvc
+        volumeMounts:
+        - name: mysql-desk-persistent-storage
+          mountPath: /var/lib/mysql:5.7.34
+      volumes:
+      - name: mysql-desk-persistent-storage
+        persistentVolumeClaim:
+          claimName: desk-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-desk-service
+  namespace: example-app
+spec:
+  selector:
+    app: mysql-desk
+  ports:
+  - port: 3306
+    targetPort: 3306

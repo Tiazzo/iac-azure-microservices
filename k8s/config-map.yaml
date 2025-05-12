@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-map
+  namespace: example-app
+data:
+  database_url_user: mysql-user-service.example-app.svc.cluster.local
+  database_url_desk: mysql-desk-service.example-app.svc.cluster.local
+  database_url_meetingroom: mysql-mgroom-service.example-app.svc.cluster.local
+  database_username: root  
+  desk: http://service-desk.example-app.svc.cluster.local:8080/api/desksvc/admin
+  meetingroom: http://service-meetingroom.example-app.svc.cluster.local:8080/api/meetingroomsvc/admin
+  user-admin: http://service-user.example-app.svc.cluster.local:8080/api/admin
+  user-employee: http://service-user.example-app.svc.cluster.local:8080/api/employee
+  user-gateway: service-user.example-app.svc.cluster.local:8080
+  meetingroom-gateway: service-meetingroom.example-app.svc.cluster.local:8080
+  desk-gateway: service-desk.example-app.svc.cluster.local:8080
+  frontend-gateway: http://10.0.0.1
+  react-app-gateway: 10.0.0.2

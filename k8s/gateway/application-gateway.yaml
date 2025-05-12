@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: example-app
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: example.registry.io/app/gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: SERVICE_USER
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: user-gateway  
+          - name: SERVICE_ROOM
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: meetingroom-gateway  
+          - name: SERVICE_DESK
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: desk-gateway
+          - name: FRONTEND
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: frontend-gateway
+          - name: SERVICE_PORT
+            value: "8080"      
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-gateway-service
+  namespace: example-app
+  labels: 
+    name: application-gateway-service
+  annotations:
+    service.beta.kubernetes.io/azure-dns-label-name: example-gateway
+spec:
+  selector:
+    app: gateway
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+
+
+
+

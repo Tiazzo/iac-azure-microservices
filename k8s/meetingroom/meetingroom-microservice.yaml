@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice-meetingroom
+  namespace: example-app
+  labels:
+    app: microservice-meetingroom
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice-meetingroom
+  template:
+    metadata:
+      labels:
+        app: microservice-meetingroom
+    spec:
+      containers:
+      - name: microservice-meetingroom
+        image: example.registry.io/app/meetingroomsvc:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MYSQL_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: database_url_meetingroom
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: database_username
+          - name: MYSQL_PASSWORD
+            value: changeme
+          - name: USER_EMPLOYEE
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: user-employee
+          - name: USER_ADMIN
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: user-admin
+          - name: SERVICE_PORT
+            value: "8080"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-meetingroom
+  namespace: example-app
+spec:
+  selector:
+    app: microservice-meetingroom
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+#example.registry.io/app/meetingroomsvc:latest

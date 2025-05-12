@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-user
+  namespace: example-app
+  labels:
+    app: mysql-user
+spec:
+  selector:
+    matchLabels:
+      app: mysql-user
+  template:
+    metadata:
+      labels:
+        app: mysql-user
+    spec:
+      containers:
+      - image: mysql:5.7.34
+        name: mysql-user
+        ports:
+        - containerPort: 3306
+          name: mysql-user
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: changeme
+        - name: MYSQL_DATABASE
+          value: usersvc
+        volumeMounts:
+        - name: mysql-user-persistent-storage
+          mountPath: /var/lib/mysql:5.7.34
+      volumes:
+      - name: mysql-user-persistent-storage
+        persistentVolumeClaim:
+          claimName: user-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-user-service
+  namespace: example-app
+spec:
+  selector:
+    app: mysql-user
+  ports:
+  - port: 3306
+    targetPort: 3306

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-mroom
+  namespace: example-app
+  labels:
+    app: mysql-mroom
+spec:
+  selector:
+    matchLabels:
+      app: mysql-mroom
+  template:
+    metadata:
+      labels:
+        app: mysql-mroom
+    spec:
+      containers:
+      - image: mysql:5.7.34
+        name: mysql-mroom
+        ports:
+        - containerPort: 3306
+          name: mysql-mroom
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: changeme
+        - name: MYSQL_DATABASE
+          value: meetingroomsvc
+        volumeMounts:
+        - name: mysql-mroom-persistent-storage
+          mountPath: /var/lib/mysql:5.7.34
+      volumes:
+      - name: mysql-mroom-persistent-storage
+        persistentVolumeClaim:
+          claimName: meetingroom-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-mgroom-service
+  namespace: example-app
+spec:
+  selector:
+    app: mysql-mroom
+  ports:
+  - port: 3306
+    targetPort: 3306

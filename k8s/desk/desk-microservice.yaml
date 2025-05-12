@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice-desk
+  namespace: example-app
+  labels:
+    app: microservice-desk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice-desk
+  template:
+    metadata:
+      labels:
+        app: microservice-desk
+    spec:
+      containers:
+      - name: microservice-desk
+        image: example.registry.io/app/desksvc:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MYSQL_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: database_url_desk
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: database_username
+          - name: MYSQL_PASSWORD
+            value: changeme
+          - name: USER_EMPLOYEE
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: user-employee
+          - name: USER_ADMIN
+            valueFrom:
+              configMapKeyRef:
+                name: config-map
+                key: user-admin
+          - name: SERVICE_PORT
+            value: "8080"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-desk
+  namespace: example-app
+spec:
+  selector:
+    app: microservice-desk
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
